@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIXI Tutorial</title>
+  </head>
+  <body>
+    <script src="./node_modules/pixi.js/dist/pixi.min.js"></script>
+    <script type="module">
+      const app = new PIXI.Application();
+      await app.init({
+        background: "#1099bb",
+        resizeTo: window,
+      });
+
+      // Required functions:
+
+      // const gameContainer = new PIXI.Container();
+
+      // app.stage.addChild(gameContainer);
+
+      // load rocket image jpg asynchronously
+      await PIXI.Assets.load("rocket.png");
+      let rocket = PIXI.Sprite.from("rocket.png");
+      rocket.anchor.set(0.5);
+
+      // rocket.rotation = 1.0;
+
+      // betting phase animation vars
+
+      let baseYBettingPhase = rocket.y; // Base Y position
+      let amplitude = 10; // Height of the hop
+      let speed = 0.2; // Speed of the hop
+      let angle = 0; // Angle for the sine wave
+
+      let baseY = app.screen.height / 2;
+      let takeoffSpeed = 2; // Speed of the takeoff
+      let horizontalSpeed = 0.1; // Speed of horizontal movement
+
+      const animateRocketBettingPhase = (delta) => {
+        angle += speed * delta; // Increase the angle to move the sprite
+
+        // Calculate the new Y position using a sine wave
+        rocket.y = baseYBettingPhase + Math.sin(angle) * amplitude;
+      };
+
+      const animateGame = (delta) => {
+        angle += speed * delta; // Increase the angle to move the sprite
+        rocket.x += horizontalSpeed * delta; // Move right
+        rocket.y = baseYBettingPhase + Math.sin(angle) * amplitude; // Calculate the new Y position using a sine wave
+
+        // Reset position if the rocket moves off the screen
+        // if (rocket.x > app.screen.width + rocket.width / 2) {
+        //   rocket.x = -rocket.width / 2; // Start offscreen to the left again
+        // }
+      };
+
+      rocket.x = app.screen.width - rocket.width; // Start offscreen to the left
+      rocket.y = app.screen.height - 70;
+      console.log("rocket width: ", -app.screen.width);
+      const animateRocketGamePhase = (delta) => {
+        // Initial position of the rocket at the bottom left
+
+        // Bottom of the screen
+        if (rocket.y > baseY) {
+          // Move up and to the right during takeoff
+          rocket.y -= takeoffSpeed * delta;
+          rocket.x += horizontalSpeed * delta;
+        } else {
+          // Horizontal sine wave movement after takeoff
+          angle += speed * delta; // Increase the angle to move the sprite
+          rocket.x += horizontalSpeed * delta; // Move right
+          rocket.y = baseY + Math.sin(angle) * amplitude; // Calculate the new Y position using a sine wave
+
+          // Reset position if the rocket moves off the screen
+          if (rocket.x > app.screen.width + rocket.width / 2) {
+            rocket.x = -rocket.width / 2; // Start offscreen to the left again
+          }
+        }
+      };
+
+      // gameContainer.addChild(rocket);
+      app.stage.addChild(rocket);
+
+      // rick.x = app.screen.width / 2;
+      // rick.y = app.screen.height / 2;
+      // rocket.x = 100; // Start offscreen to the left
+      // rocket.y = app.screen.height / 3; // Bottom of the screen
+
+      // app.stage.addChild(rick);
+
+      // gameContainer.x = app.screen.width / 2;
+      // gameContainer.y = app.screen.height / 2;
+      // gameContainer.width = app.screen.width;
+      // gameContainer.height = app.screen.height;
+      rocket.height = 70;
+      rocket.width = 70;
+
+      document.body.appendChild(app.canvas);
+      app.ticker.add((time) => {
+        // animateRocketBettingPhase(time.deltaTime);
+        // animateRocketGamePhase(time.timeDelta);
+        // animateGame(time.timeDelta);
+      });
+      // Create the application helper and add its render target to the page
+    </script>
+  </body>
+</html>
